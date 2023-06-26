@@ -42,6 +42,10 @@ public class EmployeeController extends Controller {
             return CompletableFuture.completedFuture(badRequest(Helper.createResponse("One or more of this field is missing: firstname, lastname, role, email", false)));
         }
 
+        if (Role.fromString(jsonData.get("role").asText().toLowerCase()) == Role.EMPLOYEE){
+            return CompletableFuture.completedFuture(badRequest(Helper.createResponse("Only an admin can create password", false)));
+        }
+
         EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setFirstName(jsonData.get("firstName").asText());
         employeeDTO.setLastName(jsonData.get("lastName").asText());
@@ -67,6 +71,9 @@ public class EmployeeController extends Controller {
         CompletionStage<Optional<EmployeeDTO>> optionalCompletionStage = employeeService.findEmployeeById(Long.parseLong(String.valueOf(id)));
         return optionalCompletionStage.thenComposeAsync(optionalEmployeeDTO -> {
             if (optionalEmployeeDTO.isPresent()){
+                if (optionalEmployeeDTO.get().getRole() == Role.EMPLOYEE){
+                    return CompletableFuture.completedFuture(notFound(Helper.createResponse("Only an admin can remove employee", false)));
+                }
                 employeeService.delete(Long.parseLong(String.valueOf(id)));
                 return CompletableFuture.completedFuture(ok(Helper.createResponse("Employee deleted successfully", true)));
             } else {
@@ -80,6 +87,9 @@ public class EmployeeController extends Controller {
         if (!jsonData.has("token")){
             return CompletableFuture.completedFuture(unauthorized(Helper.createResponse("Invalid token", false)));
         } else {
+            if (Role.fromString(jsonData.get("role").asText().toLowerCase()) == Role.ADMIN){
+                return CompletableFuture.completedFuture(badRequest(Helper.createResponse("Cant change admin password", false)));
+            }
             String email = jsonData.get("email").asText();
             String password = jsonData.get("password").asText();
             CompletionStage<Optional<EmployeeDTO>> employeeOptional = employeeService.findEmployeeByEmail(email);
@@ -137,10 +147,22 @@ public class EmployeeController extends Controller {
         }
     }
 
-    public CompletionStage<Result> getAllEmployees(){
-        return employeeService.getAllEmployees().thenApplyAsync(employeeDTOStream -> {
-            List<EmployeeDTO> employeeDTOList = employeeDTOStream.collect(Collectors.toList());
-            return ok(Helper.createResponse(Json.toJson(employeeDTOList), true));
+    public CompletionStage<Result> getAllEmployees(int id){
+        CompletionStage<Optional<EmployeeDTO>> employeeCompletionStage = employeeService.findEmployeeById(Long.parseLong(String.valueOf(id)));
+
+        return employeeCompletionStage.thenComposeAsync(optionalEmployeeDTO -> {
+            if (optionalEmployeeDTO.isPresent()){
+                EmployeeDTO attendanceDTO = optionalEmployeeDTO.get();
+                if (attendanceDTO.getRole() != Role.ADMIN){
+                    return CompletableFuture.completedFuture(badRequest(Helper.createResponse("Only an admin can make this request", false)));
+                }
+                return employeeService.getAllEmployees().thenApplyAsync(employeeDTOStream -> {
+                    List<EmployeeDTO> employeeDTOList = employeeDTOStream.collect(Collectors.toList());
+                    return ok(Helper.createResponse(Json.toJson(employeeDTOList), true));
+                }, executionContext.current());
+            } else {
+                return CompletableFuture.completedFuture(notFound(Helper.createResponse("Employee not found", false)));
+            }
         }, executionContext.current());
     }
 
@@ -156,18 +178,28 @@ public class EmployeeController extends Controller {
         }, executionContext.current());
     }
 
-    public CompletionStage<Result> getEmployeeDailyAttendance(){
-        LocalDate localDate = LocalDate.now();
-        CompletionStage<Optional<List<AttendanceDTO>>> optionalCompletionStage = attendanceService.findByEmployeeAndDate(localDate);
-        return optionalCompletionStage.thenApplyAsync(optionalAttendanceStream -> {
-            if (optionalAttendanceStream.isPresent()) {
-                List<AttendanceDTO> attendanceList = optionalAttendanceStream.get();
-                return ok(Json.toJson(attendanceList));
+    public CompletionStage<Result> getEmployeeDailyAttendance(int id){
+        CompletionStage<Optional<EmployeeDTO>> employeeCompletionStage = employeeService.findEmployeeById(Long.parseLong(String.valueOf(id)));
+        return employeeCompletionStage.thenComposeAsync(optionalEmployeeDTO -> {
+            if (optionalEmployeeDTO.isPresent()){
+                EmployeeDTO attendanceDTO = optionalEmployeeDTO.get();
+                if (attendanceDTO.getRole() != Role.ADMIN){
+                    return CompletableFuture.completedFuture(badRequest(Helper.createResponse("Only an admin can make this request", false)));
+                }
+                LocalDate localDate = LocalDate.now();
+                CompletionStage<Optional<List<AttendanceDTO>>> optionalCompletionStage = attendanceService.findByEmployeeAndDate(localDate);
+                return optionalCompletionStage.thenApplyAsync(optionalAttendanceStream -> {
+                    if (optionalAttendanceStream.isPresent()) {
+                        List<AttendanceDTO> attendanceList = optionalAttendanceStream.get();
+                        return ok(Json.toJson(attendanceList));
+                    } else {
+                        return notFound(Helper.createResponse("Attendance records not found", false));
+                    }
+                });
             } else {
-                return notFound(Helper.createResponse("Attendance records not found", false));
+                return CompletableFuture.completedFuture(notFound(Helper.createResponse("Employee not found", false)));
             }
-        });
-
+        }, executionContext.current());
     }
 
     public CompletionStage<Result> markAttendance(Http.Request request){

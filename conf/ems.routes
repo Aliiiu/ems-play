@@ -1,9 +1,9 @@
 
-GET     /                                 controllers.EmployeeController.getAllEmployees()
+GET     /:id                                 controllers.EmployeeController.getAllEmployees(id: Integer)
 GET         /:id                           controllers.EmployeeController.getEmployee(id: Integer)
 POST    /                               controllers.EmployeeController.addEmployee(request:Request)
 POST    /signin                          controllers.EmployeeController.signIn(request:Request)
 PUT     /update                          controllers.EmployeeController.updatePassword(request:Request)
 POST    /clockin                         controllers.EmployeeController.markAttendance(request:Request)
-GET     /attendance/daily                 controllers.EmployeeController.getEmployeeDailyAttendance()
+GET     /attendance/daily/:id                 controllers.EmployeeController.getEmployeeDailyAttendance(id: Integer)
 DELETE  /:id                            controllers.EmployeeController.removeEmployee(id: Integer)

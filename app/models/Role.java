@@ -1,14 +1,10 @@
 package models;
 
 public enum Role {
-    ADMIN("admin"),
-    EMPLOYEE("employee");
+    ADMIN,
+    EMPLOYEE;
 
     private String roleName;
-
-    Role(String roleName) {
-        this.roleName = roleName;
-    }
 
     public String getRoleName() {
         return roleName;

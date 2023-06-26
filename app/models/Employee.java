@@ -18,6 +18,7 @@ public class Employee {
     private String password;
     private String token;
     @Convert(converter = RoleConverter.class)
+    @Enumerated(EnumType.STRING)
     private Role role;
     private LocalDateTime createdAt;
 
