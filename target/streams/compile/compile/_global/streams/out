@@ -1,0 +1,4 @@
+[0m[[0m[33mwarn[0m] [0m[0m/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/app/AdminInitializer.java:31:1: unchecked conversion[0m
+[0m[[0m[33mwarn[0m] [0m[0m  required: java.util.List<models.Employee>[0m
+[0m[[0m[33mwarn[0m] [0m[0m  found:    java.util.List[0m
+[0m[[0m[33mwarn[0m] [0m[0mquery.getResultList()[0m

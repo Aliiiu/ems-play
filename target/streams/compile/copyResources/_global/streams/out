@@ -1,0 +1,6 @@
+[0m[[0m[0mdebug[0m] [0m[0mCopy resource mappings: [0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/conf/logback.xml,/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/target/scala-2.13/classes/logback.xml)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/conf/ems.routes,/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/target/scala-2.13/classes/ems.routes)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/conf/application.conf,/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/target/scala-2.13/classes/application.conf)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/conf/routes,/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/target/scala-2.13/classes/routes)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/conf/META-INF/persistence.xml,/Users/aliusalaudeen/Documents/GitHub/play-samples-play-java-starter-example/target/scala-2.13/classes/META-INF/persistence.xml)[0m
